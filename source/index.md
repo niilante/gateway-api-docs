@@ -4,7 +4,9 @@ title: Clearhaus Transaction API Documentation
 
 # Getting Started
 
-You need an API key before you can interact with our API. Send an E-mail to <a href="mailto:support@clearhaus.com">support@clearhaus.com</a> to request an API key.
+You need an API key to interact with our API. Send an E-mail to
+<a href="mailto:support@clearhaus.com">support@clearhaus.com</a> to request an
+API key.
 
 <p class="alert alert-danger">
 API keys comes with many privileges so keep them secret.
@@ -21,11 +23,11 @@ https://gateway.test.clearhaus.com # test accounts
 ## Authentication
 
 Authentication is done via HTTP Basic Auth. Simply provide your API key as
-username and a blank string as password. Remember a colon `:` after username
-when using cURL to specify an empty password.
+the username and a blank string as password. When using cURL, have just a `:`
+after the username to specify an empty password.
 
 ````shell
-curl https://gateway.test.clearhaus.com \
+curl -i https://gateway.test.clearhaus.com \
      -u <your-api-key>:
 ````
 
@@ -38,8 +40,8 @@ HTTP/1.1 401 Not Authorized
 
 ## Resource discovery
 
-The API follows [HATEOAS][HATEOAS] principle of REST which means all resources
-are discoverable.
+The API follows the [HATEOAS][HATEOAS] principle of REST, so resources are
+discoverable.
 
 ```shell
 curl https://gateway.test.clearhaus.com \
@@ -49,24 +51,20 @@ curl https://gateway.test.clearhaus.com \
 ```json
 {
     "_links": {
-        "authorizations": { "href": "/authorizations" },
-        "captures":       { "href": "/captures" },
-        "refunds":        { "href": "/refunds" },
-        "voids":          { "href": "/voids" },
-        "credits":        { "href": "/credits" },
-        "cards":          { "href": "/cards" }
+        "transactions": { "href": "/transactions" },
+        "cards":        { "href": "/cards" }
     }
 }
 ```
 
 ## Response format
-All responses will be delivered in JSON format (see [JSON-HAL][JSON-HAL]).
+Responses are in JSON format (see [JSON-HAL][JSON-HAL]).
 
 ````
 Content-Type: application/vnd.clearhaus-gateway.hal+json; version=0.9.0; charset=utf-8
 ````
 
-We use HTTP response codes to indicate API response status:
+HTTP response codes are used to indicate API response status:
 
 ````
 Number  Text                 
@@ -90,17 +88,17 @@ account.
 
 ### Reserve money
 
-The following will reserve EUR 20.50 (2050 cents) on cardholder's bank account:
+The following will reserve EUR 20.50 (2050 cents) on the cardholder's bank
+account:
 
 ````shell
 curl -X POST https://gateway.test.clearhaus.com/authorizations \
      -u <your-api-key>: \
      -d "amount=2050"   \
      -d "currency=EUR"  \
-     -d "ip=1.1.1.1"    \
      -d "card[number]=4111111111111111" \
-     -d "card[expire_month]=06"         \
-     -d "card[expire_year]=2018"        \
+     -d "card[month]=06"  \
+     -d "card[year]=2018" \
      -d "card[csc]=123"
 ````
 
@@ -108,35 +106,39 @@ Example response (snippet):
 
 ````json
 {
-    "id": "84412a34-fa29-4369-a098-0165a80e8fda",
     "status": {
         "code": 20000
     },
     "processed_at": "2014-07-09T09:53:41+00:00",
+    "_embedded": {
+        "transaction": { "id": "84412a34-fa29-4369-a098-0165a80e8fda" }
+    },
     "_links": {
-        "captures": { "href": "/authorizations/84412a34-fa29-4369-a098-0165a80e8fda/captures" }
+        "transaction": { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda" },
+        "voids":       { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda/voids" },
+        "captures":    { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda/captures" }
     }
 }
 ````
 
 In order to actually transfer money from cardholder's bank account to your
-merchant bank account you will have to make a capture transaction.
+merchant bank account, you will have to "capture".
 
 
 ### Withdraw money
 
-The following will make a capture transaction and withdraw what you have
-reserved on cardholder's bank account.
+The following will capture a reservation and withdraw what you have reserved on
+the cardholder's bank account.
 
 ````shell
-curl -X POST https://gateway.test.clearhaus.com/authorizations/84412a34-fa29-4369-a098-0165a80e8fda/captures \
+curl -X POST https://gateway.test.clearhaus.com/transactions/84412a34-fa29-4369-a098-0165a80e8fda/captures \
      -u <your-api-key>:
 ````
 
-You can withdraw a partial amount by providing an `amount` parameter:
+You can withdraw partially by providing an `amount` parameter:
 
 ````shell
-curl -X POST https://gateway.test.clearhaus.com/authorizations/84412a34-fa29-4369-a098-0165a80e8fda/captures \
+curl -X POST https://gateway.test.clearhaus.com/transactions/84412a34-fa29-4369-a098-0165a80e8fda/captures \
      -u <your-api-key>: \
      -d "amount=1000"
 ````
@@ -145,22 +147,23 @@ Example response (snippet):
 
 ````json
 {
-    "id": "d8e92a70-3030-4d4d-8ad2-684b230c1bed",
     "status": {
         "code": 20000
     },
     "processed_at": "2014-07-09T11:47:28+00:00",
-    "amount": 1000,
+    "_embedded": {
+        "transaction": { "id": "84412a34-fa29-4369-a098-0165a80e8fda" }
+    },
     "_links": {
-        "authorization": {
-            "href": "/authorizations/84412a34-fa29-4369-a098-0165a80e8fda"
-        },
-        "refunds": {
-            "href": "/captures/d8e92a70-3030-4d4d-8ad2-684b230c1bed/refunds"
-        }
+        "transaction": { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda" },
+        "captures":    { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda/captures" },
+        "refunds":     { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda/refunds" }
     }
 }
 ````
+
+The remaining of the reservation can be captured later on, e.g. if you ship
+the remaining of the goods in another delivery a few days later.
 
 
 ## Refund to cardholder
@@ -169,7 +172,7 @@ You can refund all money or a partial amount of what you have withdrawn from
 cardholder's bank account:
 
 ````shell
-curl -X POST https://gateway.test.clearhaus.com/captures/d8e92a70-3030-4d4d-8ad2-684b230c1bed/refunds \
+curl -X POST https://gateway.test.clearhaus.com/transactions/84412a34-fa29-4369-a098-0165a80e8fda/refunds \
      -u <your-api-key>: \
      -d "amount=500"
 ````
@@ -178,14 +181,15 @@ Example response (snippet):
 
 ````json
 {
-    "id": "f04c0872-47ce-4683-8d8c-e154221bba14",
     "status": {
         "code": 20000
     },
     "processed_at": "2014-07-09T11:57:58+00:00",
-    "amount": 500,
+    "_embedded": {
+        "transaction": { "id": "84412a34-fa29-4369-a098-0165a80e8fda" }
+    },
     "_links": {
-        "capture": { "href": "/captures/d8e92a70-3030-4d4d-8ad2-684b230c1bed" }
+        "transaction": { "href": "/transactions/84412a34-fa29-4369-a098-0165a80e8fda" }
     }
 }
 ````
@@ -194,19 +198,18 @@ Example response (snippet):
 ## Tokenize a card
 
 A card token is a value that references card details (see
-[Tokenization][Tokenization]). You can use a card token (card resource) to make
-authorization and credit transactions.
+[Tokenization][Tokenization]). You can use a card token (card resource) to
+create transactions.
 
-A card resource is automatically made when you make an authorization
-transaction and supply card details. You can also make a card resource
-directly:
+A card resource is automatically created when you create an authorization
+and supply card details. You can also create a card resource explicitly:
 
 ````shell
 curl -X POST https://gateway.test.clearhaus.com/cards \
      -u <your-api-key>: \
      -d "card[number]=5500000000000004" \
-     -d "card[expire_month]=06"         \
-     -d "card[expire_year]=2018"        \
+     -d "card[month]=06"  \
+     -d "card[year]=2018" \
      -d "card[csc]=123"
 ````
 
@@ -219,11 +222,10 @@ Example response (snippet):
         "code": 20000
     },
     "processed_at": "2014-07-09T12:14:31+00:00",
-    "last4": "0004",
-    "scheme": "mastercard",
     "_links": {
+        "self":           { "href": "/cards/58dabba0-e9ea-4133-8c38-bfa1028c1ed2" },
         "authorizations": { "href": "/cards/58dabba0-e9ea-4133-8c38-bfa1028c1ed2/authorizations" },
-        "credits": { "href": "/cards/58dabba0-e9ea-4133-8c38-bfa1028c1ed2/credits" }
+        "credits":        { "href": "/cards/58dabba0-e9ea-4133-8c38-bfa1028c1ed2/credits" }
     }
 }
 ````
@@ -232,11 +234,11 @@ Example response (snippet):
 ## Payout to cardholder
 
 Sometimes cardholders should receive money, e.g. if you will pay out some
-winnings. Before you can make a payout you need to [tokenize](#tokenize-a-card)
+winnings. Before you can make a payout, you need to [tokenize](#tokenize-a-card)
 a card.
 
-The following will transfer EUR 500.00 to cardholder's bank account from your
-merchant bank account:
+The following will transfer EUR 500.00 to the cardholder's bank account from
+your merchant bank account:
 
 ````shell
 curl -X POST https://gateway.test.clearhaus.com/cards/58dabba0-e9ea-4133-8c38-bfa1028c1ed2/credits \
@@ -249,13 +251,16 @@ Example response (snippet):
 
 ````json
 {
-    "id": "1b377999-bafb-42b0-a24f-106b312b0b40",
     "status": {
         "code": 20000
     },
     "processed_at": "2014-07-09T12:58:56+00:00",
-    "amount": 50000,
-    "currency": "EUR"
+    "_embedded": {
+        "transaction": { "id": "1b377999-bafb-42b0-a24f-106b312b0b40" }
+    },
+    "_links": {
+        "transaction": { "href": "/transactions/1b377999-bafb-42b0-a24f-106b312b0b40" }
+    }
 }
 ````
 
@@ -267,19 +272,18 @@ them to provide card information for subsequent payments.
 
 ### Initial payment
 
-To make an initial payment you  make an ordinary authorization and set
+To make an initial payment you create an ordinary authorization and set the
 `recurring` parameter to `true`:
 
 ````shell
 curl -X POST https://gateway.test.clearhaus.com/authorizations \
      -u <your-api-key>:  \
-     -d "amount=2050"    \
+     -d "amount=1995"    \
      -d "currency=EUR"   \
-     -d "ip=1.1.1.1"     \
      -d "recurring=true" \
      -d "card[number]=4111111111111111" \
-     -d "card[expire_month]=06"         \
-     -d "card[expire_year]=2018"        \
+     -d "card[month]=06"  \
+     -d "card[year]=2018" \
      -d "card[csc]=123"
 ````
 
@@ -287,20 +291,15 @@ Example response (snippet):
 
 ````json
 {
-   "id": "0cc74a9e-f340-4667-a4fa-09b8eda8ec2c",
    "status": {
        "code": 20000
    },
    "processed_at": "2014-07-09T13:18:13+00:00",
-   "recurring": true,
    "_embedded": {
-      "card": {
-         "id": "befa0546-c553-45df-9e7d-9c88f581b480",
-         "_links": {
-             "authorizations": { "href": "/cards/befa0546-c553-45df-9e7d-9c88f581b480/authorizations" },
-             "credits": { "href": "/cards/befa0546-c553-45df-9e7d-9c88f581b480/credits" }
-         }
-      }
+      "transaction": { "id": "0cc74a9e-f340-4667-a4fa-09b8eda8ec2c" }
+   },
+   "_links": {
+       "transaction": { "href": "/transactions/0cc74a9e-f340-4667-a4fa-09b8eda8ec2c" }
    }
 }
 ````
@@ -308,13 +307,13 @@ Example response (snippet):
 
 ### Subsequent payments
 
-A subsequent payment is also made by making an authorization but based on a
+A subsequent payment is also made by creating an authorization but based on a
 card resource (obtainable from initial payment):
 
 ````shell
 curl -X POST https://gateway.test.clearhaus.com/cards/befa0546-c553-45df-9e7d-9c88f581b480/authorizations \
      -u <your-api-key>:  \
-     -d "amount=2050"    \
+     -d "amount=1995"    \
      -d "currency=EUR"   \
      -d "recurring=true"
 ````
@@ -323,12 +322,16 @@ Example response (snippet):
 
 ````json
 {
-   "id": "e3e9d215-6efc-4c0e-b3d7-2226057c6de8",
    "status": {
        "code": 20000
    },
    "processed_at": "2014-07-09T13:33:44+00:00",
-   "recurring": true
+   "_embedded": {
+       "transaction": { "id": "e3e9d215-6efc-4c0e-b3d7-2226057c6de8" }
+   },
+   "_links": {
+       "transaction": { "href": "/transactions/e3e9d215-6efc-4c0e-b3d7-2226057c6de8" }
+   }
 }
 ````
 
