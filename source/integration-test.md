@@ -125,6 +125,20 @@ Example amounts in [ ].
 3. Capture the remaining amount. [500]
 4. Refund some of what has been captured. [900]
 
+### Capture, refund, capture
+
+Test case ID: `337c739c-ea89-44f3-b98d-3c6b2301cf79`
+
+Example amounts in [ ].
+
+1. Create an authorization. [1000]
+2. Capture some of the amount. [500]
+3. Refund the full amount. [500]
+4. Capture the remaining. [500]
+
+Notice that you can capture up to 500 in the last step; refunding does not
+"free up" a reservation wrt. what was captured.
+
 
 ## Using card tokens
 
