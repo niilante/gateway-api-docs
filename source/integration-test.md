@@ -19,22 +19,35 @@ requirement that the tests happen sequentially.
 
 # Tests
 
-Generally, when values are not listed, you may choose any "realistic" value;
-e.g. the card expire date should not be in the past. Notice that you may use any
-card number (that passes LUHN-10) for the test gateway.
+In the sections below you find the test cases, or rather, "test templates".
+They are minimal in the sense that values are not listed.  You may choose any
+"realistic" value, say:
 
-For Clearhaus to verify your integration and help digging out details, you can
-send us a CSV file structured as:
+* Card number: `(4|5)[0-9]{12,18}` and passes LUHN-10.
+* Expire: Not in the past.
+* Currency: Any supported ISO 4217 alpha-3.
+* Amount: `(1-9)[0-9]{0,10}` in minor units.
+
+Refer to the [transaction API documentation](http://docs.gateway.clearhaus.com).
+
+Each test case has an ID (which is just a random UUID). The ID is not used in
+the request, its sole purpose is to reference the test case.
+
+To carry out the integration test, do as many of the tests you fancy and record
+the `transaction_id`. Then create a CSV file structured like this:
 
 | `test_case_id`                         | `transaction_id`                       |
 |----------------------------------------|----------------------------------------|
 | `51a973f8-2d4b-4343-a075-d3d5c35e2dcf` | `22cdf576-40a1-4c81-b222-8bfbf6045751` |
 | `64e1bb11-e268-43dd-8da6-038ea4559f97` | `41223987-81db-4d67-84ae-d04bae13941b` |
+| `64e1bb11-e268-43dd-8da6-038ea4559f97` | `74f5d372-701b-40cc-b827-c192442b6efc` |
 | ...                                    | ...                                    |
 
-(Notice that a `test_case_id` may be present multiple times.)
+(Notice that a `test_case_id` may be present multiple times; e.g. if you want to
+run a test case with different cards, different currencies, etc.)
 
-Then we will check that it looks good on our end.
+In a not too distant future: You can verify your integration by posting the CSV
+to the endpoint `/integration-tests`. We will then auto-check your integration.
 
 
 ## Simple tests
