@@ -50,9 +50,9 @@ In a not too distant future: You can verify your integration by posting the CSV
 to the endpoint `/integration-tests`. We will then auto-check your integration.
 
 
-## Simple tests
+## 1. Simple tests
 
-### Authorization
+### 1.1. Authorization
 
 Test case ID: `51a973f8-2d4b-4343-a075-d3d5c35e2dcf`
 
@@ -60,7 +60,7 @@ Test case ID: `51a973f8-2d4b-4343-a075-d3d5c35e2dcf`
 
 Repeat for your relevant currencies.
 
-### Void
+### 1.2. Void
 
 Test case ID: `64e1bb11-e268-43dd-8da6-038ea4559f97`
 
@@ -69,7 +69,7 @@ Test case ID: `64e1bb11-e268-43dd-8da6-038ea4559f97`
 
 Repeat with a `text_on_statement`.
 
-### Full capture
+### 1.3. Full capture
 
 Test case ID: `090a2366-82fd-4aa9-9b1f-2a6dd780a79c`
 
@@ -79,7 +79,7 @@ Test case ID: `090a2366-82fd-4aa9-9b1f-2a6dd780a79c`
 Repeat with a default `text_on_statement` on the authorization that is
 overwritten in the capture.
 
-### Full refund
+### 1.4. Full refund
 
 Test case ID: `d0eb2bf3-ca1b-4b2f-bacb-b7735588685a`
 
@@ -88,16 +88,16 @@ Test case ID: `d0eb2bf3-ca1b-4b2f-bacb-b7735588685a`
 3. Refund the full amount.
 
 
-## Advanced capturing
+## 2. Advanced capturing
 
-### Partial capture
+### 2.1. Partial capture
 
 Test case ID: `70726196-7ae0-4e27-9577-cdbe634207ef`
 
 1. Create an authorization.
 2. Capture some of reserved money.
 
-### Multiple partial captures
+### 2.2. Multiple partial captures
 
 Test case ID: `8ccd855e-6c91-4d6a-9ace-82cfbc197ab4`
 
@@ -106,9 +106,9 @@ Test case ID: `8ccd855e-6c91-4d6a-9ace-82cfbc197ab4`
 3. Capture the remaining amount.
 
 
-## Advanced refunding
+## 3. Advanced refunding
 
-### Partial refund
+### 3.1. Partial refund
 
 Test case ID: `6a7a6c39-cdec-4363-b6b3-ecd192765a6d`
 
@@ -116,7 +116,7 @@ Test case ID: `6a7a6c39-cdec-4363-b6b3-ecd192765a6d`
 2. Capture the full amount.
 3. Refund some of the amount.
 
-### Partial capture and full refund
+### 3.2. Partial capture and full refund
 
 Test case ID: `16e0a32c-8745-4bf8-b415-ccef2394bc7b`
 
@@ -127,7 +127,7 @@ Example amounts in [ ].
 3. Capture some more (but not the remaining). [400]
 4. Refund all that has been captured. [900]
 
-### Partial capture and partial refund
+### 3.3. Partial capture and partial refund
 
 Test case ID: `179871d8-2035-48c0-b1af-03e6d5e97b77`
 
@@ -138,7 +138,7 @@ Example amounts in [ ].
 3. Capture the remaining amount. [500]
 4. Refund some of what has been captured. [900]
 
-### Capture, refund, capture
+### 3.4. Capture, refund, capture
 
 Test case ID: `337c739c-ea89-44f3-b98d-3c6b2301cf79`
 
@@ -153,9 +153,18 @@ Notice that you can capture up to 500 in the last step; refunding does not
 "free up" a reservation wrt. what was captured.
 
 
-## Using card tokens
+## 4. Card
 
-### Authorization
+### 4.1. Tokenize card
+
+Test case ID: `d2fe9eaf-492a-4dd4-9be6-8fd1ea743bdf`
+
+1. Create a card.
+
+
+## 5. Using card tokens
+
+### 5.1. Authorization
 
 Test case ID: `524eb908-f590-4e42-9d34-2e7f607d216a`
 
@@ -163,7 +172,7 @@ Test case ID: `524eb908-f590-4e42-9d34-2e7f607d216a`
 2. Use the card token to create an authorization.
 3. Void the transaction.
 
-### Credit
+### 5.2. Credit
 
 Test case ID: `08687376-1f7e-4199-b22e-e51b653a1150`
 
@@ -171,16 +180,16 @@ Test case ID: `08687376-1f7e-4199-b22e-e51b653a1150`
 2. Use the card token to create a credit.
 
 
-## 3D Secure
+## 6. 3D Secure
 
-### Visa
+### 6.1. Visa
 
 Test case ID: `224bd6ea-d7dd-40f1-aa21-3882e31b766d`
 
 1. Create an authorization with 3D Secure on a Visa card.
 2. Capture the full amount.
 
-### MasterCard
+### 6.2. MasterCard
 
 Test case ID: `2227a512-7ae1-4cfc-82da-d7059c0b8ee5`
 
@@ -188,16 +197,16 @@ Test case ID: `2227a512-7ae1-4cfc-82da-d7059c0b8ee5`
 2. Capture the full amount.
 
 
-## Recurring
+## 7. Recurring
 
-### Initial
+### 7.1. Initial
 
 Test case ID: `c8c6352b-e5a8-40ac-8edf-073b84aa36ab`
 
 1. Create a recurring on a card number that has not previously been used.
 2. Capture the full amount.
 
-### Subsequent
+### 7.2. Subsequent
 
 Test case ID: `76c0e51b-eb7f-4a49-a36f-6afd98edefb4`
 
